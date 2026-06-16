@@ -1,0 +1,35 @@
+# Compilados y artefactos Maven
+target/
+*.class
+
+# Archivos de IDE (Eclipse / IntelliJ / VS Code)
+.metadata/
+.settings/
+.classpath
+.project
+.idea/
+*.iml
+.vscode/
+
+# Maven Wrapper (no necesario dentro del contenedor, usa la imagen de Maven)
+.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Variables de entorno locales
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentación
+*.md
+HELP.md

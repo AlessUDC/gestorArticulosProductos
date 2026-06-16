@@ -1,0 +1,102 @@
+========================================================
+  INSTRUCCIONES PARA LEVANTAR LOS SERVICIOS CON DOCKER
+  Proyecto: appRelacionesjpa (Spring Boot + MySQL)
+========================================================
+
+REQUISITOS PREVIOS
+──────────────────
+  - Docker Desktop (o Docker Engine) instalado y en ejecución
+  - Docker Compose v2+ instalado
+  - Puertos 8080 y 3306 disponibles en tu máquina
+
+ESTRUCTURA DE ARCHIVOS RELEVANTE
+─────────────────────────────────
+  proyectoSpringBootPT2/
+  ├── docker-compose.yml                   ← Orquesta ambos contenedores
+  ├── INSTRUCCIONES.txt                    ← Este archivo
+  └── backend/
+      ├── bd_colegio.sql                   ← Script SQL (se ejecuta automáticamente)
+      └── appRelacionesjpa/
+          ├── Dockerfile                   ← Imagen del backend Spring Boot
+          └── .dockerignore
+
+──────────────────────────────────────────────────────
+  PASOS PARA INICIAR LOS SERVICIOS
+──────────────────────────────────────────────────────
+
+1. Abre una terminal en la raíz del proyecto:
+   (la carpeta que contiene docker-compose.yml)
+
+   cd /ruta/a/proyectoSpringBootPT2
+
+2. Construir las imágenes y levantar los contenedores:
+
+   docker compose up --build
+
+   • La primera vez descargará las imágenes base y compilará el JAR.
+     Puede tardar varios minutos.
+   • El contenedor de MySQL se iniciará primero; el backend
+     esperará hasta que MySQL esté saludable (healthcheck).
+
+3. Verificar que los servicios están corriendo:
+
+   docker compose ps
+
+   Deberías ver dos contenedores con estado "running" o "healthy":
+     - mysql_bd_colegio
+     - springboot_backend
+
+4. Acceder a la aplicación:
+   - API Spring Boot → http://localhost:8080
+   - Base de datos   → localhost:3306  (usuario: root / contraseña: 12345678)
+
+──────────────────────────────────────────────────────
+  COMANDOS ÚTILES
+──────────────────────────────────────────────────────
+
+Levantar en segundo plano (detached):
+  docker compose up --build -d
+
+Ver logs en tiempo real:
+  docker compose logs -f
+
+Ver logs solo del backend:
+  docker compose logs -f backend
+
+Ver logs solo de MySQL:
+  docker compose logs -f mysql
+
+Detener los servicios (mantiene los datos):
+  docker compose stop
+
+Detener Y eliminar los contenedores:
+  docker compose down
+
+Eliminar también el volumen de datos de MySQL (⚠️ borra la BD):
+  docker compose down -v
+
+Reconstruir solo el backend (tras cambios en el código):
+  docker compose up --build backend
+
+──────────────────────────────────────────────────────
+  NOTAS IMPORTANTES
+──────────────────────────────────────────────────────
+
+* El archivo bd_colegio.sql se ejecuta automáticamente al
+  crear el contenedor MySQL por primera vez (carpeta
+  docker-entrypoint-initdb.d). Si el volumen ya existe,
+  NO se vuelve a ejecutar.
+
+* Para resetear la base de datos completamente:
+    docker compose down -v
+    docker compose up --build
+
+* La URL de conexión del backend se sobreescribe mediante
+  variables de entorno en docker-compose.yml:
+    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bd_colegio...
+  (el hostname "mysql" es el nombre del servicio en Docker)
+
+* Si usas application.properties fuera de Docker (desarrollo
+  local sin contenedores), la URL sigue apuntando a localhost:3306.
+
+========================================================

@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+
+  # ─────────────────────────────────────────
+  # Servicio: Base de datos MySQL
+  # ─────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_bd_colegio
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: bd_colegio
+    ports:
+      - "3306:3306"
+    volumes:
+      # Script SQL de inicialización (crea tablas e inserta datos)
+      - ./backend/bd_colegio.sql:/docker-entrypoint-initdb.d/bd_colegio.sql:ro
+      # Volumen persistente para los datos de MySQL
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345678"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # Servicio: Backend Spring Boot
+  # ─────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend/appRelacionesjpa
+      dockerfile: Dockerfile
+    container_name: springboot_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Sobreescribe application.properties para apuntar al contenedor MySQL
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_colegio?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
