@@ -20,7 +20,7 @@
 //    #buscador      → input de búsqueda
 // ─────────────────────────────────────────────────────────────
 
-const API_URL = 'http://localhost:8080/api/productos';
+const API_URL = `${CONFIG.API_URL}/api/productos`;
 
 // ── Cache local de productos (para filtrado sin re-fetch) ──────
 let _productos = [];

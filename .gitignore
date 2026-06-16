@@ -1,0 +1,22 @@
+# Maven/Java Build artifacts
+**/target/
+**/*.jar
+**/*.war
+**/*.ear
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp
+.DS_Store
+
+# Spring Boot DevTools
+**/bin/
+**/.settings/
+**/.classpath
+**/.project
+**/.factorypath
+**/.springBeans
+**/.sts4-cache/

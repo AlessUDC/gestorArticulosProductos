@@ -10,17 +10,17 @@ services:
     container_name: mysql_bd_colegio
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: bd_colegio
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       # Script SQL de inicialización (crea tablas e inserta datos)
       - ./backend/bd_colegio.sql:/docker-entrypoint-initdb.d/bd_colegio.sql:ro
       # Volumen persistente para los datos de MySQL
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345678"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,7 +40,7 @@ services:
       # Sobreescribe application.properties para apuntar al contenedor MySQL
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bd_colegio?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 12345678
+      SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
     depends_on:
